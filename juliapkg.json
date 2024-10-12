@@ -1,0 +1,10 @@
+{
+    "packages": {
+        "DLPack": {
+            "uuid": "53c2dc0f-f7d5-43fd-8906-6c0220547083"
+        },
+        "Zygote": {
+            "uuid": "e88e6eb3-aa80-5325-afca-941959d7151f"
+        }
+    }
+}

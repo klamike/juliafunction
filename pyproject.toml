@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "juliafunction"
+version = "0.0.1"
+description = "JuliaFunction: Call Julia functions from PyTorch with PythonCall and Zygote"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Michael Klamkin", email = "klam@gatech.edu" }]
+dependencies = ["torch>2", "juliacall"]
+
+[tool.setuptools.packages.find]
+include = ["juliafunction"]

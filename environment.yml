@@ -1,0 +1,7 @@
+name: jftorch
+channels:
+  - conda-forge
+dependencies:
+  - python=3
+  - pytorch::pytorch
+  - pyjuliacall
