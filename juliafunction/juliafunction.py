@@ -42,13 +42,13 @@ class JuliaFunction(Module):
         maybe_init_julia()
 
         self._forward = _make_julia_function(
-            fwd_str=f"_out = @spawnat :any {forward}(_args...)",
-            bwd_str=f"_out = @spawnat :any {backward}(_state, _args)",
+            fwd_str=f"_out = Threads.@spawn {forward}(_args...)",
+            bwd_str=f"_out = Threads.@spawn {backward}(_state, _args)",
             fwd_cleanup_str="_args = nothing; _out = nothing",
             bwd_cleanup_str="_args = nothing; _out = nothing; _state = nothing",
             setup_code=setup_code,
             include=include,
-            dependencies="using DLPack, Distributed",
+            dependencies="using DLPack",
             global_vars="global _args, _state, _out",
             sample_imports=[forward, backward],
             batch_dims=batch_dims,
@@ -80,13 +80,13 @@ class ZygoteFunction(Module):
         maybe_init_julia()
 
         self._forward = _make_julia_function(
-            fwd_str=f"_out = @spawnat :any Zygote.pullback({fn_name}, _args...)",
-            bwd_str=f"_out = @spawnat :any _state(_args)",
+            fwd_str=f"_out = Threads.@spawn Zygote.pullback({fn_name}, _args...)",
+            bwd_str=f"_out = Threads.@spawn _state(_args)",
             fwd_cleanup_str="_args = nothing; _out = nothing",
             bwd_cleanup_str="_args = nothing; _out = nothing; _state = nothing",
             setup_code=setup_code,
             include=include,
-            dependencies="using DLPack, Zygote, Distributed",
+            dependencies="using DLPack, Zygote",
             global_vars="global _args, _state, _out",
             sample_imports=[fn_name],
             batch_dims=batch_dims,
@@ -105,7 +105,7 @@ def _make_julia_function(
     include: Optional[str | list[str]] = None,
     dependencies: str = "",
     global_vars: str = "",
-    sample_imports: list[str] = None,
+    sample_imports: Optional[list[str]] = None,
     batch_dims: Optional[list[int]] = None,
 ):
     from uuid import uuid4

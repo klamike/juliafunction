@@ -2,7 +2,7 @@
 
 using JuMP
 import DiffOpt
-import MadNLP, MadNLPGPU
+import Ipopt
 import ChainRulesCore
 import Base.Iterators: repeated
 using LinearAlgebra
@@ -10,7 +10,7 @@ using LinearAlgebra
 
 function matrix_relu( # 1 -> 3
     y::Matrix;
-    model = Model(() -> DiffOpt.diff_optimizer(MadNLP.Optimizer)),
+    model = Model(() -> DiffOpt.diff_optimizer(Ipopt.Optimizer)),
 )
     layer_size, batch_size = size(y)
     empty!(model)
@@ -18,12 +18,12 @@ function matrix_relu( # 1 -> 3
     @variable(model, x[1:layer_size, 1:batch_size] >= 0)
     @objective(model, Min, x[:]'x[:] - 2y[:]'x[:])
     optimize!(model)
-    return value.(x), value.(x), "hi"
+    return value.(x)
 end
 
 
 function ChainRulesCore.rrule(::typeof(matrix_relu), y::Matrix{T}) where {T}
-    model = Model(() -> DiffOpt.diff_optimizer(MadNLP.Optimizer))
+    model = Model(() -> DiffOpt.diff_optimizer(Ipopt.Optimizer))
     pv = matrix_relu(y; model = model)
     function pullback_matrix_relu(dl_dx)
         # some value from the backpropagation (e.g., loss) is denoted by `l`

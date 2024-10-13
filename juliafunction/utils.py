@@ -27,10 +27,14 @@ def _batchify_str():
 function batch_getindex(xs, i)
     ret = []
     for (idx, x) in enumerate(xs)
-        ndx = ndims(x)
-        idxs::Vector{Any} = [Colon() for _ in 1:ndx]
-        idxs[ndx] = i + 1
-        push!(ret, getindex(x, idxs...))
+        if isnothing(x)
+            continue
+        else
+            ndx = ndims(x)
+            idxs::Vector{Any} = [Colon() for _ in 1:ndx]
+            idxs[ndx] = i + 1
+            push!(ret, getindex(x, idxs...))
+        end
     end
     return Tuple(ret)
 end
@@ -51,7 +55,7 @@ def dlpack_tensor(x: Tensor, jl):
     """
     Convert a single PyTorch tensor to a Julia array/matrix via DLPack.
     """
-    return jl.from_dlpack(x.contiguous().detach())  # NOTE: need to use contiguous?
+    return jl.DLPack.from_dlpack(x.contiguous().detach())  # NOTE: need to use contiguous?
 
 
 def maybe_init_julia():
@@ -61,7 +65,7 @@ def maybe_init_julia():
     if Main.isdefined(Main, Main.Symbol("_juliafunction_initialized")) and Main._juliafunction_initialized:
         return
 
-    Main.seval("using DLPack, Distributed")
+    Main.seval("using DLPack")
     Main.seval("_juliafunction_initialized = true")
 
     init_torch_dlpack()
@@ -90,7 +94,6 @@ def make_module(name, dependencies, globals, jl):
 
 def _tensorize_str():
     return """\
-    
 unzip(a) = map(x->getfield.(a, x), fieldnames(eltype(a)))
 
 dlpackable(T) = T in keys(DLPack.jltypes_to_dtypes())
