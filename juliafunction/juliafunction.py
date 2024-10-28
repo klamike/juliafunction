@@ -249,7 +249,12 @@ def _make_julia_function(
                 SampleModule.seval(bwd_cleanup_str)
             CallModule.seval(f"inputs = nothing; batch_dims = nothing; outputs = nothing; _errors = nothing")
 
-            return tuple(y)
+            yt = [
+                None if all(y_ij is None for y_ij in y_i) else y_i
+                for y_i in y
+            ]
+
+            return tuple(yt)
 
     def julia_function(*args, **kwargs):
         not_first = _JuliaFunction.apply(*args, **kwargs)[1:]

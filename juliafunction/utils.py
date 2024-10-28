@@ -100,11 +100,11 @@ dlpackable(T) = T in keys(DLPack.jltypes_to_dtypes())
 
 function tensorize(V::Vector{T}) where {T}
     x = copy(V)
-    return if dlpackable(T) DLPack.share(x, Main._torch_from_dlpack) else x end
+    return if dlpackable(T) DLPack.share(x, Main._torch_from_dlpack) else pylist(x) end
 end
 
 function tensorize(V::Vector{Array{T,N}}) where {T,N}
     x = stack(V)
-    return if dlpackable(T) DLPack.share(x, Main._torch_from_dlpack) else x end
+    return if dlpackable(T) DLPack.share(x, Main._torch_from_dlpack) else pylist(x) end
 end
 """
