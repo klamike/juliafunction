@@ -7,9 +7,9 @@ Usage:
 setup_code = """
 function add_or_mul(x, y, mode)
   if mode == "add"
-    return x + y
+    return x .+ y
   else
-    return x * y
+    return x .* y
   end
 end"""
 
