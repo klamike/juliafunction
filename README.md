@@ -1,5 +1,8 @@
 # juliafunction
 
+> [!WARNING]
+> This is probably broken in Julia 1.12. Proceed with caution.
+
 Utilities for embedding differentiable Julia functions in PyTorch training pipelines, using JuliaCall.
 
 Usage:
